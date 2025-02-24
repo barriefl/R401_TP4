@@ -23,14 +23,19 @@ namespace R401_TP4.Models.EntityFramework
         public string? Prenom { get; set; }
 
         [Column("utl_mobile", TypeName = "char(10)")]
+        [RegularExpression(@"^0[0-9]{9}$", ErrorMessage = "Le mobile doit contenir 10 chiffres.")]
         public string? Mobile { get; set; }
 
+        [Required]
         [Column("utl_mail")]
-        [StringLength(100)]
+        [EmailAddress]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "La longueur d’un email doit être comprise entre 6 et 100 caractères.")]
         public string Mail { get; set; } = null!;
 
+        [Required]
         [Column("utl_pwd")]
         [StringLength(64)]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,20}$", ErrorMessage = "Le mot de passe doit contenir entre 12 et 20 caractères avec au moins 1 lettre majuscule, 1 chiffre et 1 caractère spécial.")]
         public string Pwd { get; set; } = null!;
 
         [Column("utl_rue")]
@@ -38,6 +43,7 @@ namespace R401_TP4.Models.EntityFramework
         public string? Rue { get; set; }
 
         [Column("utl_cp", TypeName = "char(5)")]
+        [RegularExpression(@"^[0-9]{5}$", ErrorMessage = "Le code postal doit contenir 5 chiffres.")]
         public string? CodePostal { get; set; }
 
         [Column("utl_ville")]

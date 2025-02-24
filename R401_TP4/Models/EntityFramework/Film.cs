@@ -13,6 +13,7 @@ namespace R401_TP4.Models.EntityFramework
         [Column("flm_id")]
         public int FilmId { get; set; }
 
+        [Required]
         [Column("flm_titre")]
         [StringLength(100)]
         public string Titre { get; set; } = null!;
