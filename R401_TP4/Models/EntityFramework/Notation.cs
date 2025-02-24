@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace R401_TP4.Models.EntityFramework
 {
-    [PrimaryKey("UtilisateurId", "FilmId")]
     [Table("t_j_notation_not")]
     public partial class Notation
     {
@@ -23,10 +22,10 @@ namespace R401_TP4.Models.EntityFramework
         [Column("not_note")]
         public int Note { get; set; }
 
-        [InverseProperty(nameof(Utilisateur.UtilisateurId))]
+        [InverseProperty(nameof(Utilisateur.NotesUtilisateur))]
         public virtual Utilisateur UtilisateurNotant { get; set; } = null!;
 
-        [InverseProperty(nameof(Film.FilmId))]
+        [InverseProperty(nameof(Film.NotesFilm))]
         public virtual Film FilmNote { get; set; } = null!;
     }
 }

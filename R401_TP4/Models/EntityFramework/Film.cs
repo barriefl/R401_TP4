@@ -21,16 +21,16 @@ namespace R401_TP4.Models.EntityFramework
         public string? Resume { get; set; }
 
         [Column("flm_datesortie", TypeName = "date")]
-        public DateTime DateSortie { get; set; }
+        public DateTime? DateSortie { get; set; }
 
-        [Column("flm_duree", TypeName = "date")]
-        public decimal Duree { get; set; }
+        [Column("flm_duree", TypeName = "numeric(3,0)")]
+        public decimal? Duree { get; set; }
 
-        [Column("flm_genre", TypeName = "numeric(3,0)")]
+        [Column("flm_genre")]
         [StringLength(30)]
         public string? Genre { get; set; }
 
-        [InverseProperty(nameof(Notation.FilmId))]
-        public virtual ICollection<Notation> NotesFilm { get; set; } = null!;
+        [InverseProperty(nameof(Notation.FilmNote))]
+        public virtual ICollection<Notation> NotesFilm { get; set; } = new List<Notation>();
     }
 }

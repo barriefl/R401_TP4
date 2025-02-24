@@ -46,7 +46,6 @@ namespace R401_TP4.Models.EntityFramework
 
         [Column("utl_pays")]
         [StringLength(50)]
-        [DefaultValue("France")]
         public string? Pays { get; set; }
 
         [Column("utl_latitude", TypeName = "real")]
@@ -57,10 +56,9 @@ namespace R401_TP4.Models.EntityFramework
 
         [Required]
         [Column("utl_datecreation", TypeName = "date")]
-        [DefaultValue("now()")]
         public DateTime DateCreation { get; set; }
 
-        [InverseProperty(nameof(Notation.UtilisateurId))]
-        public virtual ICollection<Notation> NotesUtilisateur { get; set; } = null!;
+        [InverseProperty(nameof(Notation.UtilisateurNotant))]
+        public virtual ICollection<Notation> NotesUtilisateur { get; set; } = new List<Notation>();
     }
 }
