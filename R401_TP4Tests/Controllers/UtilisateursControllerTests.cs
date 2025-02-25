@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using R401_TP4.Controllers;
+using R401_TP4.Models.DataManager;
 using R401_TP4.Models.EntityFramework;
+using R401_TP4.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +22,16 @@ namespace R401_TP4.Controllers.Tests
     {
         private FilmRatingsDBContext context;
         private UtilisateursController controller;
+        private IDataRepository<Utilisateur> dataRepository;
 
         [TestInitialize] 
         public void InitialisationDesTests() 
         {
+            var builder = new DbContextOptionsBuilder<FilmRatingsDBContext>().UseNpgsql();
             context = new FilmRatingsDBContext();
-            controller = new UtilisateursController(context);
+            //controller = new UtilisateursController(context);
+            dataRepository = new UtilisateurManager(context);
+            controller = new UtilisateursController(dataRepository);
         }
 
         [TestMethod()]
@@ -105,7 +111,7 @@ namespace R401_TP4.Controllers.Tests
             var errorResult = result.Result as NotFoundResult;
             // Assert.
             Assert.IsInstanceOfType(result, typeof(ActionResult<Utilisateur>), "Pas un ActionResult.");
-            Assert.IsNotNull(result.Result, "Il n'y a pas d'erreur.");
+            Assert.IsNotNull(result.Result, "Il n'y a pas d'erreur."); // Null = pas d'erreur.
             Assert.AreEqual(errorResult.StatusCode, StatusCodes.Status404NotFound, "Pas une erreur 404.");
             Assert.IsNull(result.Value, "Utilisateur créé alors qu'il y a une erreur.");
         }

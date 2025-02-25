@@ -1,6 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
+using R401_TP4.Models.DataManager;
 using R401_TP4.Models.EntityFramework;
+using R401_TP4.Models.Repository;
 
 namespace R401_TP4
 {
@@ -11,6 +13,7 @@ namespace R401_TP4
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddScoped<IDataRepository<Utilisateur>, UtilisateurManager>();
 
             builder.Services.AddDbContext<FilmRatingsDBContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("FilmRatingsDBContext")));
