@@ -75,6 +75,35 @@ namespace R401_TP4.Controllers.Tests
         }
 
         [TestMethod()]
+        public void GetUtilisateurByIdTest_OK_AvecMoq()
+        {
+            Utilisateur user = new Utilisateur
+            {
+                UtilisateurId = 1,
+                Nom = "Calida",
+                Prenom = "Lilley",
+                Mobile = "0653930778",
+                Mail = "clilleymd@last.fm",
+                Pwd = "Toto12345678!",
+                Rue = "Impasse des bergeronnettes",
+                CodePostal = "74200",
+                Ville = "Allinges",
+                Pays = "France",
+                Latitude = 46.344795F,
+                Longitude = 6.4885845F
+            };
+            var mockRepository = new Mock<IDataRepository<Utilisateur>>();
+            mockRepository.Setup(x => x.GetByIdAsync(1).Result).Returns(user);
+            var userController = new UtilisateursController(mockRepository.Object);
+            // Act
+            var actionResult = userController.GetUtilisateurById(1).Result;
+            // Assert
+            Assert.IsNotNull(actionResult);
+            Assert.IsNotNull(actionResult.Value);
+            Assert.AreEqual(user, actionResult.Value as Utilisateur);
+        }
+
+        [TestMethod()]
         public void GetUtilisateurByIdTest_NonOK()
         {
             // Arrange.
@@ -86,6 +115,18 @@ namespace R401_TP4.Controllers.Tests
             Assert.IsNotNull(result.Result, "Il n'y a pas d'erreur.");
             Assert.AreEqual(errorResult.StatusCode, StatusCodes.Status404NotFound, "Pas une erreur 404.");
             Assert.IsNull(result.Value, "Utilisateur créé alors qu'il y a une erreur.");
+        }
+
+        [TestMethod()]
+        public void GetUtilisateurByIdTest_NonOK_AvecMoq()
+        {
+            // Arrange.
+            var mockRepository = new Mock<IDataRepository<Utilisateur>>();
+            var userController = new UtilisateursController(mockRepository.Object);
+            // Act.
+            var actionResult = userController.GetUtilisateurById(0).Result;
+            // Assert.
+            Assert.IsInstanceOfType(actionResult.Result, typeof(NotFoundResult));
         }
 
         [TestMethod()]
@@ -104,6 +145,35 @@ namespace R401_TP4.Controllers.Tests
         }
 
         [TestMethod()]
+        public void GetUtilisateurByEmailTest_OK_AvecMoq()
+        {
+            Utilisateur user = new Utilisateur
+            {
+                UtilisateurId = 1,
+                Nom = "Calida",
+                Prenom = "Lilley",
+                Mobile = "0653930778",
+                Mail = "clilleymd@last.fm",
+                Pwd = "Toto12345678!",
+                Rue = "Impasse des bergeronnettes",
+                CodePostal = "74200",
+                Ville = "Allinges",
+                Pays = "France",
+                Latitude = 46.344795F,
+                Longitude = 6.4885845F
+            };
+            var mockRepository = new Mock<IDataRepository<Utilisateur>>();
+            mockRepository.Setup(x => x.GetByStringAsync("clilleymd@last.fm").Result).Returns(user);
+            var userController = new UtilisateursController(mockRepository.Object);
+            // Act
+            var actionResult = userController.GetUtilisateurByEmail("clilleymd@last.fm").Result;
+            // Assert
+            Assert.IsNotNull(actionResult);
+            Assert.IsNotNull(actionResult.Value);
+            Assert.AreEqual(user, actionResult.Value as Utilisateur);
+        }
+
+        [TestMethod()]
         public void GetUtilisateurByEmailTest_NonOK()
         {
             // Arrange.
@@ -118,7 +188,50 @@ namespace R401_TP4.Controllers.Tests
         }
 
         [TestMethod()]
+        public void GetUtilisateurByEmailTest_NonOK_AvecMoq()
+        {
+            // Arrange.
+            var mockRepository = new Mock<IDataRepository<Utilisateur>>();
+            var userController = new UtilisateursController(mockRepository.Object);
+            // Act.
+            var actionResult = userController.GetUtilisateurByEmail("yayailesttropbeau@gmail.com").Result;
+            // Assert.
+            Assert.IsInstanceOfType(actionResult.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod()]
         public void PostUtilisateurTest_OK()
+        {
+            // Arrange.
+            Random rnd = new Random();
+            int chiffre = rnd.Next(1, 1000000000);
+            Utilisateur user = new Utilisateur
+            {
+                Nom = "POISSON",
+                Prenom = "Pascal",
+                Mobile = "1",
+                Mail = "poisson" + chiffre + "@gmail.com",
+                Pwd = "Toto12345678!",
+                Rue = "Chemin de Bellevue",
+                CodePostal = "74940",
+                Ville = "Annecy-le-Vieux",
+                Pays = "France",
+                Latitude = null,
+                Longitude = null
+            };
+            // Act.
+            var actionResult = controller.PostUtilisateur(user).Result;
+            // Assert.
+            Assert.IsInstanceOfType(actionResult, typeof(ActionResult<Utilisateur>), "Pas un ActionResult<Utilisateur>");
+            Assert.IsInstanceOfType(actionResult.Result, typeof(CreatedAtActionResult), "Pas un CreatedAtActionResult");
+            var result = actionResult.Result as CreatedAtActionResult;
+            Assert.IsInstanceOfType(result.Value, typeof(Utilisateur), "Pas un Utilisateur");
+            user.UtilisateurId = ((Utilisateur)result.Value).UtilisateurId;
+            Assert.AreEqual(user, (Utilisateur)result.Value, "Utilisateurs pas identiques");
+        }
+
+        [TestMethod()]
+        public void PostUtilisateurTest_OK_AvecMoq()
         {
             // Arrange.
             var mockRepository = new Mock<IDataRepository<Utilisateur>>();
@@ -219,13 +332,60 @@ namespace R401_TP4.Controllers.Tests
                 Ville = "Allinges",
                 Pays = "France",
                 Latitude = (float?)46.344795,
-                Longitude = (float?)6.4885845
+                Longitude = (float?)6.4885845,
+                DateCreation = DateTime.Now.Date
             };
             // Act.
             var result = controller.PutUtilisateur(1, userAtester).Result; // .Result pour appeler la méthode async de manière synchrone, afin d'attendre l’ajout  
             Utilisateur? userRecupere = context.Utilisateurs.Where(u => u.UtilisateurId == 1).FirstOrDefault();
             // Assert.
             Assert.AreEqual(userRecupere, userAtester, "Utilisateurs pas identiques");
+        }
+
+        [TestMethod()]
+        public void PutUtilisateurTest_OK_AvecMoq()
+        {
+            // Arrange.
+            Utilisateur userAtester = new Utilisateur()
+            {
+                UtilisateurId = 1,
+                Nom = "Calida",
+                Prenom = "Lilley",
+                Mobile = "0653930778",
+                Mail = "calida@gmail.com",
+                Pwd = "Toto12345678!",
+                Rue = "Impasse des bergeronnettes",
+                CodePostal = "74200",
+                Ville = "Allinges",
+                Pays = "France",
+                Latitude = (float?)46.344795,
+                Longitude = (float?)6.4885845,
+                DateCreation = DateTime.Now.Date
+            };
+
+            Utilisateur userModifier = new Utilisateur()
+            {
+                UtilisateurId = 1,
+                Nom = "Calida",
+                Prenom = "Lilley",
+                Mobile = "0653930778",
+                Mail = "calidalapetitecoquine@gmail.com",
+                Pwd = "T45678!coquine",
+                Rue = "Impasse des coquines",
+                CodePostal = "74200",
+                Ville = "Coquine",
+                Pays = "France",
+                Latitude = (float?)46.344795,
+                Longitude = (float?)6.4885845,
+                DateCreation = DateTime.Now.Date
+            };
+            var mockRepository = new Mock<IDataRepository<Utilisateur>>();
+            mockRepository.Setup(x => x.GetByIdAsync(1).Result).Returns(userAtester);
+            var userController = new UtilisateursController(mockRepository.Object);
+            // Act.
+            var actionResult = userController.PutUtilisateur(1, userAtester).Result;
+            // Assert.
+            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult"); // Test du type de retour
         }
 
         [TestMethod()]
@@ -309,6 +469,34 @@ namespace R401_TP4.Controllers.Tests
 
             var deletedUser = context.Utilisateurs.FindAsync(userId).Result;
             Assert.IsNull(deletedUser);
+        }
+
+        [TestMethod]
+        public void DeleteUtilisateurTest_OK_AvecMoq()
+        {
+            // Arrange.
+            Utilisateur user = new Utilisateur
+            {
+                UtilisateurId = 1,
+                Nom = "Calida",
+                Prenom = "Lilley",
+                Mobile = "0653930778",
+                Mail = "clilleymd@last.fm",
+                Pwd = "Toto12345678!",
+                Rue = "Impasse des bergeronnettes",
+                CodePostal = "74200",
+                Ville = "Allinges",
+                Pays = "France",
+                Latitude = 46.344795F,
+                Longitude = 6.4885845F
+            };
+            var mockRepository = new Mock<IDataRepository<Utilisateur>>();
+            mockRepository.Setup(x => x.GetByIdAsync(1).Result).Returns(user);
+            var userController = new UtilisateursController(mockRepository.Object);
+            // Act.
+            var actionResult = userController.DeleteUtilisateur(1).Result;
+            // Assert.
+            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult"); // Test du type de retour
         }
     }
 }
